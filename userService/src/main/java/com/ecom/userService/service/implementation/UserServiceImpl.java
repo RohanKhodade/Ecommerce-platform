@@ -32,6 +32,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse registerUser(RegisterUserRequest req) {
         User user = mapper.registerUserRequestToUser(req);
+
+        if (userRepository.findByEmail(req.getEmail()).isPresent()){
+            return null;
+        }
+
         System.out.println("User:"+ user.toString());
         if (!req.getPassword().equals(req.getConfirmPassword())){
                 return null;
@@ -103,5 +108,14 @@ public class UserServiceImpl implements UserService {
         user.setBirthdate(LocalDate.parse(request.getBirthDate()));
         user.setPhone(request.getPhone());
         return mapper.UserToUserResponse(userRepository.save(user));
+    }
+
+    @Override
+    public String deleteUser(Long userId){
+        if (userRepository.existsById(userId)){
+            userRepository.deleteById(userId);
+            return "user deleted with id :"+ userId;
+        }
+        return "user not found";
     }
 }

@@ -10,4 +10,5 @@ public interface UserService {
     String changePassword(Long userId, ChangePasswordRequest changePassword);
     String changeEmail(Long userId, ChangeEmailRequest changeEmail);
     UserResponse updateUserDetails(Long userId, UpdateUserRequest request);
+    String deleteUser(Long userId);
 }

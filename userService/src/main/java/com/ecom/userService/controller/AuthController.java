@@ -22,6 +22,9 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<UserResponse> register(@RequestBody RegisterUserRequest userReq){
         UserResponse userResponse=userService.registerUser(userReq);
+        if (userResponse==null){
+            return ResponseEntity.badRequest().build();
+        }
         return new ResponseEntity<> (userResponse,HttpStatus.OK);
     }
     @PostMapping("/login")
@@ -37,5 +40,9 @@ public class AuthController {
     public ResponseEntity<String> changeEmail(@PathVariable Long userId,
                                               @RequestBody ChangeEmailRequest request){
         return new ResponseEntity<> (userService.changeEmail(userId,request),HttpStatus.OK);
+    }
+    @DeleteMapping("/delete/{userId}")
+    public ResponseEntity<String> delete(@PathVariable Long userId){
+        return new ResponseEntity<> (userService.deleteUser(userId),HttpStatus.OK);
     }
 }

@@ -44,7 +44,7 @@ public class AddressServiceImpl implements AddressService {
     public AddressResponse updateAddress(Long userId,
                                          Long addressId,
                                          UpdateAddressRequest request) {
-        Optional<Address> address=addressRepository.findByIdAndUserId(userId,addressId);
+        Optional<Address> address=addressRepository.findByIdAndUserId(addressId,userId);
         if (address.isPresent()){
             Address address1=address.get();
             address1.setBuilding(request.getBuilding());
@@ -62,12 +62,15 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public String deleteAddress(Long userId, Long addressId) {
-        boolean exist=addressRepository.existsByUserId(userId);
-        if (!exist) return "User's address dont exist";
-        boolean isAddress=addressRepository.existsById(addressId);
-        if (!isAddress) return "Address dont exists";
-        addressRepository.deleteById(addressId);
-        return "Address Deleted";
+        Optional<Address> address=addressRepository.findByIdAndUserId(addressId, userId);
+        if (address.isPresent()){
+            addressRepository.deleteById(addressId);
+            return "Address Deleted";
+        }
+        else{
+            return "Address Not Found OR you must delete your address only";
+        }
+
     }
 
     @Override
