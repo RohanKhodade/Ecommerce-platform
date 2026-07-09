@@ -28,32 +28,26 @@ public class UserController {
     @PutMapping("/update/{userId}")
     public ResponseEntity<UserResponse> updateUser(@PathVariable Long userId,
                                                    @RequestBody UpdateUserRequest request){
-        UserResponse response=userService.updateUserDetails(userId, request);
-        if (response==null) return ResponseEntity.badRequest().build();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(userService.updateUserDetails(userId, request), HttpStatus.OK);
     }
 
     @PostMapping("/address/create/{userId}")
     public ResponseEntity<AddressResponse> createAddress(@PathVariable Long userId,
                                                          @RequestBody AddAddressRequest request){
-        AddressResponse addressResponse=addressService.createAddress(request,userId);
-        if (addressResponse==null) return ResponseEntity.badRequest().build();
-        return new ResponseEntity<>(addressResponse, HttpStatus.CREATED);
+        return new ResponseEntity<>(addressService.createAddress(request,userId),HttpStatus.CREATED);
     }
+
     @PutMapping("/address/update/{userId}/{addressId}")
     public ResponseEntity<AddressResponse> updateAddress(@PathVariable Long userId,
                                                          @PathVariable Long addressId,
                                                          @RequestBody UpdateAddressRequest request){
-        AddressResponse response=addressService.updateAddress(userId,addressId,request);
-        if (response==null) return ResponseEntity.badRequest().build();
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<> (addressService.updateAddress(userId, addressId, request),
+                HttpStatus.OK);
     }
     @GetMapping("/address/get/{userId}/{addressId}")
     public ResponseEntity<AddressResponse> getAddress(@PathVariable Long userId,
                                                       @PathVariable Long addressId){
-        AddressResponse response=addressService.getAddress(userId,addressId);
-        if (response==null) return ResponseEntity.badRequest().build();
-        return new ResponseEntity<> (response,HttpStatus.OK);
+        return new ResponseEntity<> (addressService.getAddress(userId,addressId),HttpStatus.OK);
     }
 
     @GetMapping("/address/getAll/{userId}")
