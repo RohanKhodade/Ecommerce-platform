@@ -1,8 +1,7 @@
 package com.ecom.userService.service.implementation;
 
 import com.ecom.userService.dto.Mapper;
-import com.ecom.userService.dto.request.LoginUserRequest;
-import com.ecom.userService.dto.request.RegisterUserRequest;
+import com.ecom.userService.dto.request.*;
 import com.ecom.userService.dto.response.UserResponse;
 import com.ecom.userService.entity.Role;
 import com.ecom.userService.entity.User;
@@ -11,6 +10,7 @@ import com.ecom.userService.service.services.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -56,5 +56,52 @@ public class UserServiceImpl implements UserService {
             return "password incorrect";
         }
         return " no user found with email : " + email;
+    }
+
+    @Override
+    public String changePassword(Long userId, ChangePasswordRequest changePassword) {
+        User user=userRepository.findById(userId).orElse(null);
+        if (user==null) {
+            return "no user found with id: " + userId;
+        }
+        String oldPassword=changePassword.getOldPassword();
+        String newPassword=changePassword.getNewPassword();
+        if (passwordEncoder.matches(oldPassword,user.getPassword())){
+            if (oldPassword.equals(newPassword)){
+                return "old and new passwords cannot be same";
+            }
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            return "password changed";
+        }
+        return "old password is incorrect";
+    }
+
+    @Override
+    public String changeEmail(Long userId, ChangeEmailRequest changeEmail) {
+        User user=userRepository.findById(userId).orElse(null);
+        if (user==null) {
+            return "no user found with id: " + userId;
+        }
+        Optional<User> existingUser=userRepository.findByEmail(changeEmail.getNewEmail());
+        if(existingUser.isEmpty()){
+            user.setEmail(changeEmail.getNewEmail());
+            userRepository.save(user);
+            return "email changed";
+        }
+        return "user with email already exist";
+    }
+
+    @Override
+    public UserResponse updateUserDetails(Long userId, UpdateUserRequest request){
+        User user=userRepository.findById(userId).orElse(null);
+        if (user==null){
+            return null;
+        }
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setBirthdate(LocalDate.parse(request.getBirthDate()));
+        user.setPhone(request.getPhone());
+        return mapper.UserToUserResponse(userRepository.save(user));
     }
 }

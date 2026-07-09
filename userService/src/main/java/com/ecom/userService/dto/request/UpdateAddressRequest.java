@@ -12,5 +12,4 @@ public class UpdateAddressRequest {
     @NotBlank private String state;
     @NotBlank private String zip;
     @NotBlank private String country;
-
 }
