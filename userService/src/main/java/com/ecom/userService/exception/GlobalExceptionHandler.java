@@ -27,4 +27,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> invalidCredentialsException(InvalidCredentialsException ex){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
     }
+
+    @ExceptionHandler(CustomUserNotFoundException.class)
+    public ResponseEntity<String> customUserNotFoundException(CustomUserNotFoundException ex){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedBySecurityException.class)
+    public ResponseEntity<String> accessDeniedBySecurityException(AccessDeniedBySecurityException ex){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
 }

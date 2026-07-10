@@ -10,6 +10,8 @@ import com.ecom.userService.exception.InvalidCredentialsException;
 import com.ecom.userService.exception.ResourceNotFoundException;
 import com.ecom.userService.exception.PasswordMismatchException;
 import com.ecom.userService.repository.UserRepository;
+import com.ecom.userService.security.JwtUtility;
+import com.ecom.userService.security.UserAccessGuard;
 import com.ecom.userService.service.services.UserService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,14 +25,20 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final Mapper mapper;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtility jwtUtility;
+    private final UserAccessGuard userAccessGuard;
 
     public UserServiceImpl(UserRepository userRepository,
                            Mapper mapper,
-                           PasswordEncoder passwordEncoder
+                           PasswordEncoder passwordEncoder,
+                           JwtUtility jwtUtility,
+                           UserAccessGuard userAccessGuard
     ) {
         this.userRepository = userRepository;
         this.mapper = mapper;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtility = jwtUtility;
+        this.userAccessGuard = userAccessGuard;
     }
 
     @Override
@@ -55,7 +63,10 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email).
                 orElseThrow(() -> new ResourceNotFoundException("user not found"));
         if (passwordEncoder.matches(req.getPassword(), user.getPassword())) {
-            return "credentials correct , user logged in. jwt returned";
+            return jwtUtility.generateToken(email);
+            // we can later add AuthenticationManager in here instead of manual checks
+            // Authentication manager is already defined in security.securityConfig
+            // the work is same we are just doing manual checks
         }else{
             throw new InvalidCredentialsException("password is incorrect");
         }
@@ -63,8 +74,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String changePassword(Long userId, ChangePasswordRequest changePassword) {
-        User user=userRepository.findById(userId).orElseThrow(
-                () -> new ResourceNotFoundException("user not found"));
+        User user=userAccessGuard.getVerifiedUser(userId);
         String oldPassword=changePassword.getOldPassword();
         String newPassword=changePassword.getNewPassword();
         if (!passwordEncoder.matches(oldPassword,user.getPassword())) {
@@ -80,9 +90,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String changeEmail(Long userId, ChangeEmailRequest changeEmail) {
-        User user=userRepository.findById(userId).orElseThrow(
-                ()-> new ResourceNotFoundException("user not found")
-        );
+        User user=userAccessGuard.getVerifiedUser(userId);
         Optional<User> existingUser=userRepository.findByEmail(changeEmail.getNewEmail());
         if(existingUser.isPresent()){
             throw new DuplicateResourceException("User with "+changeEmail.getNewEmail()
@@ -95,9 +103,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse updateUserDetails(Long userId, UpdateUserRequest request){
-        User user=userRepository.findById(userId).orElseThrow(
-                ()-> new ResourceNotFoundException("user not found")
-        );
+        User user=userAccessGuard.getVerifiedUser(userId);
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setBirthdate(LocalDate.parse(request.getBirthDate()));
@@ -107,6 +113,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String deleteUser(Long userId){
+        User user=userAccessGuard.getVerifiedUser(userId);
         if (!userRepository.existsById(userId)) {
             throw new ResourceNotFoundException("user not found");
         }

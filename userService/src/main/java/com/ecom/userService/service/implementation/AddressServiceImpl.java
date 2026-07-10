@@ -9,6 +9,8 @@ import com.ecom.userService.entity.User;
 import com.ecom.userService.exception.ResourceNotFoundException;
 import com.ecom.userService.repository.AddressRepository;
 import com.ecom.userService.repository.UserRepository;
+import com.ecom.userService.security.AuthenticationUtil;
+import com.ecom.userService.security.UserAccessGuard;
 import com.ecom.userService.service.services.AddressService;
 import org.springframework.stereotype.Service;
 
@@ -19,19 +21,18 @@ import java.util.List;
 public class AddressServiceImpl implements AddressService {
 
     private final AddressRepository addressRepository;
-    private final UserRepository userRepository;
     private final Mapper mapper;
+    private final UserAccessGuard userAccessGuard;
     public AddressServiceImpl(AddressRepository addressRepository,
-                              UserRepository userRepository,
-                              Mapper mapper) {
+                              Mapper mapper,
+                              UserAccessGuard userAccessGuard) {
         this.addressRepository = addressRepository;
         this.mapper = mapper;
-        this.userRepository = userRepository;
+        this.userAccessGuard = userAccessGuard;
     }
     @Override
     public AddressResponse createAddress(AddAddressRequest request,Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(()-> new ResourceNotFoundException("user not found"));
+        User user=userAccessGuard.getVerifiedUser(userId);
         Address address=mapper.AddressReqToAddress(request);
         address.setUser(user);
         return mapper.AddressToResponse(addressRepository.save(address));
@@ -41,6 +42,7 @@ public class AddressServiceImpl implements AddressService {
     public AddressResponse updateAddress(Long userId,
                                          Long addressId,
                                          UpdateAddressRequest request) {
+        userAccessGuard.getVerifiedUser(userId);
         Address address=addressRepository.findByIdAndUserId(addressId,userId).
                 orElseThrow(()-> new ResourceNotFoundException(" Address not found with user: "+
                         userId+", address: "+ addressId));
@@ -56,6 +58,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public String deleteAddress(Long userId, Long addressId) {
+        userAccessGuard.getVerifiedUser(userId);
         if (!addressRepository.existsByIdAndUserId(addressId, userId)) {
             throw new ResourceNotFoundException("Address not found");
         }
@@ -65,6 +68,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public AddressResponse getAddress(Long userId, Long addressId) {
+        userAccessGuard.getVerifiedUser(userId);
         Address address=addressRepository.findByIdAndUserId(addressId, userId).orElseThrow(
                 ()-> new ResourceNotFoundException(" Address not found with user: "+
                         userId+", address: "+ addressId)
@@ -74,9 +78,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public List<AddressResponse> getAllAddresses(Long userId) {
-        if (!userRepository.existsById(userId)){
-            throw new ResourceNotFoundException("user not found");
-        }
+        userAccessGuard.getVerifiedUser(userId);
         List<Address>addressList=addressRepository.findByUserId(userId);
         List<AddressResponse> responseList=new ArrayList<>();
         for(Address address: addressList){
