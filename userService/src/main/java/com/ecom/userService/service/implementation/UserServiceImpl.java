@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email).
                 orElseThrow(() -> new ResourceNotFoundException("user not found"));
         if (passwordEncoder.matches(req.getPassword(), user.getPassword())) {
-            return jwtUtility.generateToken(email);
+            return jwtUtility.generateToken(email,user.getId());
             // we can later add AuthenticationManager in here instead of manual checks
             // Authentication manager is already defined in security.securityConfig
             // the work is same we are just doing manual checks

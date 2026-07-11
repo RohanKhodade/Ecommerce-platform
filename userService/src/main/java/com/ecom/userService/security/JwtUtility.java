@@ -1,6 +1,7 @@
 package com.ecom.userService.security;
 
 
+import com.ecom.userService.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -24,9 +25,10 @@ public class JwtUtility {
 
     //called once at login after password and email is verified
     //builds the token and hand back to client
-    public String generateToken(String userEmail){
+    public String generateToken(String userEmail,long userId){
         return Jwts.builder()
                 .subject(userEmail) // whose token is this
+                .claim("userId",userId)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis()+EXPIRATION_TIME))
                 .signWith(getKey())
