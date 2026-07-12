@@ -1,6 +1,7 @@
 package com.ecom.inventoryService.controller;
 
 import com.ecom.inventoryService.dto.request.AddProductRequest;
+import com.ecom.inventoryService.dto.request.OrderPlaceOrCancelRequest;
 import com.ecom.inventoryService.dto.request.UpdateProductRequest;
 import com.ecom.inventoryService.dto.response.ProductResponse;
 import com.ecom.inventoryService.entity.Product;
@@ -55,5 +56,16 @@ public class ProductController {
                                            @PathVariable Long sellerId){
         return new ResponseEntity<>
                 (productService.delete(productId,sellerId),HttpStatus.NO_CONTENT);
+    }
+    @PostMapping("/order/place/{productId}")
+    public ResponseEntity<String> decrementInventory(@RequestBody OrderPlaceOrCancelRequest request,
+                                                     @PathVariable Long productId){
+        return new ResponseEntity<> (productService.placeOrder(request,productId),HttpStatus.OK);
+    }
+
+    @PostMapping("/order/cancel/{productId}")
+    public ResponseEntity<String> cancelOrder(@RequestBody OrderPlaceOrCancelRequest request,
+                                              @PathVariable Long productId){
+        return new ResponseEntity<> (productService.cancelOrder(request,productId),HttpStatus.OK);
     }
 }

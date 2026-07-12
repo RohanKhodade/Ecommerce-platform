@@ -2,16 +2,21 @@ package com.ecom.inventoryService.services.implementation;
 
 import com.ecom.inventoryService.dto.Mapper;
 import com.ecom.inventoryService.dto.request.AddProductRequest;
+import com.ecom.inventoryService.dto.request.OrderPlaceOrCancelRequest;
 import com.ecom.inventoryService.dto.request.UpdateProductRequest;
 import com.ecom.inventoryService.dto.response.ProductResponse;
 import com.ecom.inventoryService.entity.Category;
 import com.ecom.inventoryService.entity.Product;
 import com.ecom.inventoryService.exception.AccessDeniedException;
+import com.ecom.inventoryService.exception.InsufficientStockException;
 import com.ecom.inventoryService.exception.ResourceNotFoundException;
 import com.ecom.inventoryService.repo.CategoryRepository;
 import com.ecom.inventoryService.repo.ProductRepository;
 import com.ecom.inventoryService.security.UserAccessGuard;
 import com.ecom.inventoryService.services.service.ProductService;
+import jakarta.transaction.Transactional;
+import org.hibernate.query.Order;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.stylesheets.LinkStyle;
 
@@ -26,15 +31,18 @@ public class ProductServiceImpl implements ProductService {
     private final Mapper mapper;
     private final CategoryRepository categoryRepository;
     private final UserAccessGuard userAccessGuard;
+    private final OrderTransactions orderTransactions;
 
     public ProductServiceImpl(ProductRepository productRepository,
                               CategoryRepository categoryRepository,
                               UserAccessGuard userAccessGuard,
-                              Mapper mapper) {
+                              Mapper mapper,
+                              OrderTransactions orderTransactions) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.userAccessGuard = userAccessGuard;
         this.mapper = mapper;
+        this.orderTransactions = orderTransactions;
     }
 
     @Override
@@ -110,5 +118,41 @@ public class ProductServiceImpl implements ProductService {
             productResponses.add(mapper.toProductResponse(product));
         }
         return productResponses;
+    }
+
+    @Override
+    public String placeOrder(OrderPlaceOrCancelRequest request, Long productId){
+        int MAX_ATTEMPTS=3;
+        int attempts=0;
+        while(attempts<MAX_ATTEMPTS){
+            try{
+                return orderTransactions.doPlaceOrder(request,productId);
+            }catch(OptimisticLockingFailureException ex){
+                attempts++;
+                if (attempts >= MAX_ATTEMPTS){
+                    throw new RuntimeException(
+                            "Max attempts reached, Could not place order , please try again, ");
+                }
+            }
+        }
+        throw new RuntimeException("Unexpected error placing the order");
+    }
+
+    @Override
+    public String cancelOrder(OrderPlaceOrCancelRequest request, Long productId){
+        int MAX_ATTEMPTS=3;
+        int attempts=0;
+        while(attempts<MAX_ATTEMPTS){
+            try{
+                return orderTransactions.doCancelOrder(request,productId);
+            }catch(OptimisticLockingFailureException ex){
+                attempts++;
+                if(attempts >= MAX_ATTEMPTS){
+                    throw new RuntimeException(
+                            "Couldn't cancel order, Max attempts reached, try again");
+                }
+            }
+        }
+        throw new RuntimeException("Unexpected error cancelling the order");
     }
 }

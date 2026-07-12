@@ -1,6 +1,7 @@
 package com.ecom.inventoryService.services.service;
 
 import com.ecom.inventoryService.dto.request.AddProductRequest;
+import com.ecom.inventoryService.dto.request.OrderPlaceOrCancelRequest;
 import com.ecom.inventoryService.dto.request.UpdateProductRequest;
 import com.ecom.inventoryService.dto.response.ProductResponse;
 import com.ecom.inventoryService.entity.Product;
@@ -16,4 +17,6 @@ public interface ProductService {
     ProductResponse update(UpdateProductRequest request, Long productId, Long sellerId);
 
     ProductResponse add(AddProductRequest request, Long sellerId);
+    String placeOrder(OrderPlaceOrCancelRequest request,Long productId);
+    String cancelOrder(OrderPlaceOrCancelRequest request,Long productId);
 }

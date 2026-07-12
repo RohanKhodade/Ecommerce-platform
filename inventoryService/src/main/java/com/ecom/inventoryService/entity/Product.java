@@ -31,4 +31,7 @@ public class Product {
     private Category category;
 
     private Long sellerId;
+
+    @Version
+    private Long version;
 }
