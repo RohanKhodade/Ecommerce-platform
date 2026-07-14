@@ -18,6 +18,7 @@ public class Mapper {
         response.setPrice(product.getPrice().toString());
         response.setQuantity(product.getQuantity().toString());
         response.setCategoryName(product.getCategory().getName());
+        response.setSellerId(product.getSellerId().toString());
         return response;
     }
     public Product toProduct(AddProductRequest request){
