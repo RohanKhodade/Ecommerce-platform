@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,7 +29,7 @@ public class Cart {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy="cart",cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<CartItem> cartItems;
+    private List<CartItem> cartItems =new ArrayList<>();
 
     @PrePersist
     public void prePersist() {

@@ -7,9 +7,13 @@ import org.springframework.stereotype.Component;
 public class UserAccessGuard {
 
     private final JwtUtility jwtUtility;
-    public UserAccessGuard(JwtUtility jwtUtility) {
+    private final AuthUtil authUtil;
+    public UserAccessGuard(JwtUtility jwtUtility,
+                           AuthUtil authUtil) {
         this.jwtUtility = jwtUtility;
+        this.authUtil = authUtil;
     }
+
 
     public boolean isUserVerified(Long userId){
         String token=jwtUtility.extractToken();

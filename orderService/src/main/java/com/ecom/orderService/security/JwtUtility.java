@@ -1,6 +1,6 @@
 package com.ecom.orderService.security;
 
-import com.ecom.orderService.exceptiions.JwtTokenNotFoundException;
+import com.ecom.orderService.exceptions.JwtTokenNotFoundException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
