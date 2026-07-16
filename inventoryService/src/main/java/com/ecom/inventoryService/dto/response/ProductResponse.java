@@ -2,6 +2,8 @@ package com.ecom.inventoryService.dto.response;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class ProductResponse {
 
@@ -9,7 +11,7 @@ public class ProductResponse {
     private String name;
     private String description;
     private String quantity;
-    private String price;
+    private BigDecimal price;
     private String categoryName;
     private String sellerId;
 }
