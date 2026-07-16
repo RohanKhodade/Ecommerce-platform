@@ -10,11 +10,11 @@ import java.util.List;
 public interface CartService {
 
     String addItemToCart(CartItemRequest request);
-    String removeItemFromCart(Long itemId);
+    String removeItemFromCart(Long productId);
     String updateCartItemQuantity(CartItemRequest request);
     List<CartItemResponse> getCartItems();
     Cart getCart();
     String clearCart();
-    CartItemResponse getCartItem(Long itemId);
+    CartItemResponse getCartItem(Long productId);
 //    Integer getTotalPriceOfCart();
 }

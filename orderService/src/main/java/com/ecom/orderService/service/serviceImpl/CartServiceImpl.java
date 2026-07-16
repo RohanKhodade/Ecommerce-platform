@@ -56,10 +56,11 @@ public class CartServiceImpl implements CartService {
         cartItemRepository.save(cartItem);
         return "Item Added to cart";
     }
-    public String removeItemFromCart(Long itemId){
+    public String removeItemFromCart(Long productId){
         Long userId=authUtil.getLoggedInUserId();
-        getCart();
-        CartItem cartItem=cartItemRepository.findById(itemId).orElseThrow(
+        Cart cart=getCart();
+        CartItem cartItem=cartItemRepository.findByCartIdAndProductId(cart.getId(),productId)
+                .orElseThrow(
                 ()->new ResourceNotFoundException("Item not found")
         );
         if (!cartItem.getCart().getUserId().equals(userId)){
@@ -78,8 +79,10 @@ public class CartServiceImpl implements CartService {
         return cartItemsResponseList;
     }
 
-    public CartItemResponse getCartItem(Long itemId){
-        CartItem cartItem=cartItemRepository.findById(itemId).orElseThrow(
+    public CartItemResponse getCartItem(Long productId){
+        Cart cart=getCart();
+        CartItem cartItem=cartItemRepository.findByCartIdAndProductId(cart.getId(),productId)
+                .orElseThrow(
                 ()-> new ResourceNotFoundException("Item not found")
         );
         Long userId=authUtil.getLoggedInUserId();
@@ -92,7 +95,8 @@ public class CartServiceImpl implements CartService {
     public String updateCartItemQuantity(CartItemRequest request){
         Long userId=authUtil.getLoggedInUserId();
         Cart cart=getCart();
-        CartItem cartItem=cartItemRepository.findById(request.getProductId()).orElseThrow(
+        CartItem cartItem=cartItemRepository.findByCartIdAndProductId(cart.getId(),request.getProductId())
+                        .orElseThrow(
                 ()->new ResourceNotFoundException("Item not found")
         );
         if(!cartItem.getCart().getUserId().equals(userId)){
@@ -105,12 +109,8 @@ public class CartServiceImpl implements CartService {
     }
 
     public String clearCart(){
-        Long userId=authUtil.getLoggedInUserId();
         Cart existingCart=getCart();
-        Cart cart=cartRepository.getByUserId(userId).orElseThrow(
-                ()-> new ResourceNotFoundException("Cart not found")
-        );
-        cartItemRepository.deleteAll(cart.getCartItems());
+        existingCart.getCartItems().clear();
         cartRepository.save(existingCart);
         return "Cart cleared ";
     }
