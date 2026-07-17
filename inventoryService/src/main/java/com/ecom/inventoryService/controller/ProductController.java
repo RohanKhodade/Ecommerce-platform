@@ -58,14 +58,13 @@ public class ProductController {
                 (productService.delete(productId,sellerId),HttpStatus.NO_CONTENT);
     }
     @PostMapping("/product/place/{productId}")
-    public ResponseEntity<String> decrementInventory(@RequestBody OrderPlaceOrCancelRequest request,
-                                                     @PathVariable Long productId){
-        return new ResponseEntity<> (productService.placeOrder(request,productId),HttpStatus.OK);
+    public ResponseEntity<String> decrementInventory(@PathVariable Long productId,@RequestBody OrderPlaceOrCancelRequest request
+                                                     ){
+        return new ResponseEntity<> (productService.placeOrder(productId,request),HttpStatus.OK);
     }
 
     @PostMapping("/product/cancel/{productId}")
-    public ResponseEntity<String> cancelOrder(@RequestBody OrderPlaceOrCancelRequest request,
-                                              @PathVariable Long productId){
-        return new ResponseEntity<> (productService.cancelOrder(request,productId),HttpStatus.OK);
+    public ResponseEntity<String> cancelOrder(@PathVariable Long productId,@RequestBody OrderPlaceOrCancelRequest request){
+        return new ResponseEntity<> (productService.cancelOrder(productId,request),HttpStatus.OK);
     }
 }

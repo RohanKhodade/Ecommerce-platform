@@ -18,8 +18,7 @@ public class OrderTransactions {
     }
 
     @Transactional
-    public String doPlaceOrder(OrderPlaceOrCancelRequest request,
-                               Long productId){
+    public String doPlaceOrder( Long productId,OrderPlaceOrCancelRequest request){
         Product product=productRepository.findById(productId).orElseThrow(
                 ()-> new ResourceNotFoundException("Product not found with id: " + productId));
         int quantity=product.getQuantity()-request.getQuantity();
@@ -33,8 +32,7 @@ public class OrderTransactions {
     }
 
     @Transactional
-    public String doCancelOrder(OrderPlaceOrCancelRequest request,
-                                Long productId){
+    public String doCancelOrder( Long productId,OrderPlaceOrCancelRequest request){
         Product product=productRepository.findById(productId).orElseThrow(
                 ()-> new ResourceNotFoundException("Product not found with id: " + productId));
         int quantity=product.getQuantity()+request.getQuantity();

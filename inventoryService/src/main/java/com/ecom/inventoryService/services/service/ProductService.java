@@ -17,6 +17,6 @@ public interface ProductService {
     ProductResponse update(UpdateProductRequest request, Long productId, Long sellerId);
 
     ProductResponse add(AddProductRequest request, Long sellerId);
-    String placeOrder(OrderPlaceOrCancelRequest request,Long productId);
-    String cancelOrder(OrderPlaceOrCancelRequest request,Long productId);
+    String placeOrder( Long productId,OrderPlaceOrCancelRequest request);
+    String cancelOrder( Long productId,OrderPlaceOrCancelRequest request);
 }

@@ -41,7 +41,6 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
     @Version

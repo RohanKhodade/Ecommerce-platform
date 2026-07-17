@@ -13,7 +13,7 @@ public interface InventoryClient {
     @GetMapping("/api/inventory/all")
     ProductResponse getAllProducts();
 
-    @GetMapping("/api/inventory/{productId")
+    @GetMapping("/api/inventory/{productId}")
     ProductResponse getProductResponse(@PathVariable Long productId);
 
     @PostMapping("/api/inventory/product/place/{productId}")

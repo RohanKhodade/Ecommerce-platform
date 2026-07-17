@@ -121,12 +121,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public String placeOrder(OrderPlaceOrCancelRequest request, Long productId){
+    public String placeOrder( Long productId,OrderPlaceOrCancelRequest request){
         int MAX_ATTEMPTS=3;
         int attempts=0;
         while(attempts<MAX_ATTEMPTS){
             try{
-                return orderTransactions.doPlaceOrder(request,productId);
+                return orderTransactions.doPlaceOrder(productId,request);
             }catch(OptimisticLockingFailureException ex){
                 attempts++;
                 if (attempts >= MAX_ATTEMPTS){
@@ -139,12 +139,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public String cancelOrder(OrderPlaceOrCancelRequest request, Long productId){
+    public String cancelOrder( Long productId,OrderPlaceOrCancelRequest request){
         int MAX_ATTEMPTS=3;
         int attempts=0;
         while(attempts<MAX_ATTEMPTS){
             try{
-                return orderTransactions.doCancelOrder(request,productId);
+                return orderTransactions.doCancelOrder(productId,request);
             }catch(OptimisticLockingFailureException ex){
                 attempts++;
                 if(attempts >= MAX_ATTEMPTS){

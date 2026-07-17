@@ -5,6 +5,7 @@ import com.ecom.orderService.clients.inventoryService.OrderPlaceOrCancelRequest;
 import com.ecom.orderService.clients.inventoryService.ProductResponse;
 import com.ecom.orderService.dto.Mapper;
 import com.ecom.orderService.dto.response.CartItemResponse;
+import com.ecom.orderService.dto.response.OrderResponse;
 import com.ecom.orderService.entity.*;
 import com.ecom.orderService.exceptions.AccessDeniedException;
 import com.ecom.orderService.exceptions.ResourceNotFoundException;
@@ -30,17 +31,20 @@ public class OrderServiceImpl implements OrderService {
     private final CartService cartService;
     private final AuthUtil authUtil;
     private final InventoryClient inventoryClient;
+    private final Mapper mapper;
     public OrderServiceImpl(OrderRepository orderRepository,
                             OrderItemRepository orderItemRepository,
                             CartService cartService,
                             AuthUtil authUtil,
-                            InventoryClient inventoryClient
+                            InventoryClient inventoryClient,
+                            Mapper mapper
                              ) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.cartService = cartService;
         this.authUtil=authUtil;
         this.inventoryClient = inventoryClient;
+        this.mapper=mapper;
     }
 
     @Transactional
@@ -85,6 +89,8 @@ public class OrderServiceImpl implements OrderService {
                 orderItem.setStatus(ItemStatus.CONFIRMED);
                 orderItemRepository.save(orderItem);
             }
+            // to do payment service call to make payment
+            // send notification to user via notification service
             order.setTotalPrice(totalPrice);
             orderRepository.save(order);
             cartService.clearCart();
@@ -116,9 +122,21 @@ public class OrderServiceImpl implements OrderService {
                 order.getOrderStatus()==OrderStatus.SHIPPED){
             throw new IllegalStateException(order.getOrderStatus()+" cannot be cancelled");
         }
-        order.setOrderStatus(OrderStatus.CANCELLED);
-        orderRepository.save(order);
-        return "Order cancelled";
+        try{
+            List<OrderItem> orderItems=order.getOrderItems();
+            for (OrderItem orderItem: orderItems){
+                OrderPlaceOrCancelRequest requestQuantity=
+                        new OrderPlaceOrCancelRequest(orderItem.getQuantity());
+                inventoryClient.cancelOrder(orderItem.getProductId(),requestQuantity);
+                orderItem.setStatus(ItemStatus.CANCELLED);
+                orderItemRepository.save(orderItem);
+            }
+            order.setOrderStatus(OrderStatus.CANCELLED);
+            orderRepository.save(order);
+            return "Order cancelled";
+        }catch (Exception ex){
+            return ex.getMessage();
+        }
     }
 
     public Order createOrder(){
@@ -128,6 +146,14 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderStatus(OrderStatus.PENDING);
         order.setAddress("address is currently hardcoded");
         return orderRepository.save(order);
+    }
+    public OrderResponse viewOrder(Long orderId){
+        Order order=orderRepository.findById(orderId).orElseThrow(
+                ()->  new ResourceNotFoundException("Order not found"));
+        if (!order.getUserId().equals(authUtil.getLoggedInUserId())){
+            throw new AccessDeniedException("Access denied");
+        }
+        return mapper.toOrderResponse(order);
     }
 
 }

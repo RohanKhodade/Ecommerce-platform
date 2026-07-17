@@ -4,5 +4,6 @@ public enum ItemStatus {
     PENDING,
     CONFIRMED,
     SHIPPED,
-    DELIVERED
+    DELIVERED,
+    CANCELLED,
 }
