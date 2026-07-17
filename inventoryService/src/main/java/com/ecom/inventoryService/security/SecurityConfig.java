@@ -26,8 +26,7 @@ public class SecurityConfig {
                         sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth->
                         auth.requestMatchers("/api/inventory/all",
-                                        "/api/inventory/{productId}",
-                                        "/api/inventory/product/**").permitAll()
+                                        "/api/inventory/{productId}").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();

@@ -3,6 +3,8 @@ package com.ecom.orderService.service.serviceImpl;
 import com.ecom.orderService.clients.inventoryService.InventoryClient;
 import com.ecom.orderService.clients.inventoryService.OrderPlaceOrCancelRequest;
 import com.ecom.orderService.clients.inventoryService.ProductResponse;
+import com.ecom.orderService.clients.userService.UserAddressResponse;
+import com.ecom.orderService.clients.userService.UserClient;
 import com.ecom.orderService.dto.Mapper;
 import com.ecom.orderService.dto.response.CartItemResponse;
 import com.ecom.orderService.dto.response.OrderResponse;
@@ -32,12 +34,14 @@ public class OrderServiceImpl implements OrderService {
     private final AuthUtil authUtil;
     private final InventoryClient inventoryClient;
     private final Mapper mapper;
+    private final UserClient userClient;
     public OrderServiceImpl(OrderRepository orderRepository,
                             OrderItemRepository orderItemRepository,
                             CartService cartService,
                             AuthUtil authUtil,
                             InventoryClient inventoryClient,
-                            Mapper mapper
+                            Mapper mapper,
+                            UserClient userClient
                              ) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
@@ -45,6 +49,7 @@ public class OrderServiceImpl implements OrderService {
         this.authUtil=authUtil;
         this.inventoryClient = inventoryClient;
         this.mapper=mapper;
+        this.userClient=userClient;
     }
 
     @Transactional
@@ -144,7 +149,18 @@ public class OrderServiceImpl implements OrderService {
         Long userId=authUtil.getLoggedInUserId();
         order.setUserId(userId);
         order.setOrderStatus(OrderStatus.PENDING);
-        order.setAddress("address is currently hardcoded");
+        List<UserAddressResponse> addressList;
+        try{
+            addressList=userClient.getUserAddress(userId);
+        }catch(Exception ex){
+            throw ex;
+        }
+        UserAddressResponse firstAddress;
+        firstAddress=addressList.getFirst();
+        String address=firstAddress.getBuilding()+" "+firstAddress.getStreet()+
+                " "+firstAddress.getCity()+" "+firstAddress.getState()+" "+firstAddress.getZip()
+                +" "+firstAddress.getCountry();
+        order.setAddress(address);
         return orderRepository.save(order);
     }
     public OrderResponse viewOrder(Long orderId){

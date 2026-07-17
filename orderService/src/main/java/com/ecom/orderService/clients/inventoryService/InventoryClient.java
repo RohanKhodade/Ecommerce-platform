@@ -1,5 +1,6 @@
 package com.ecom.orderService.clients.inventoryService;
 
+import com.ecom.orderService.config.FeignClientConfig;
 import jakarta.ws.rs.Path;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name="inventoryService")
+@FeignClient(name="inventoryService",configuration= FeignClientConfig.class)
 public interface InventoryClient {
 
     @GetMapping("/api/inventory/all")
