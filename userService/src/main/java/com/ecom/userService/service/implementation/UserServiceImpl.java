@@ -10,6 +10,7 @@ import com.ecom.userService.exception.InvalidCredentialsException;
 import com.ecom.userService.exception.ResourceNotFoundException;
 import com.ecom.userService.exception.PasswordMismatchException;
 import com.ecom.userService.repository.UserRepository;
+import com.ecom.userService.security.AuthenticationUtil;
 import com.ecom.userService.security.JwtUtility;
 import com.ecom.userService.security.UserAccessGuard;
 import com.ecom.userService.service.services.UserService;
@@ -27,18 +28,21 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtility jwtUtility;
     private final UserAccessGuard userAccessGuard;
+    private final AuthenticationUtil authenticationUtil;
 
     public UserServiceImpl(UserRepository userRepository,
                            Mapper mapper,
                            PasswordEncoder passwordEncoder,
                            JwtUtility jwtUtility,
-                           UserAccessGuard userAccessGuard
+                           UserAccessGuard userAccessGuard,
+                           AuthenticationUtil authenticationUtil
     ) {
         this.userRepository = userRepository;
         this.mapper = mapper;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtility = jwtUtility;
         this.userAccessGuard = userAccessGuard;
+        this.authenticationUtil = authenticationUtil;
     }
 
     @Override
@@ -120,5 +124,13 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(userId);
         return "user deleted with id :"+ userId;
 
+    }
+
+    public UserResponse getMyInfo(){
+        String email=authenticationUtil.getLoggedInUser();
+        User user=userRepository.findByEmail(email).orElseThrow(
+                () -> new ResourceNotFoundException("logged in user not")
+        );
+        return mapper.UserToUserResponse(user);
     }
 }

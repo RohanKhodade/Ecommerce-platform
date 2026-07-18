@@ -3,6 +3,8 @@ package com.ecom.orderService.service.serviceImpl;
 import com.ecom.orderService.clients.inventoryService.InventoryClient;
 import com.ecom.orderService.clients.inventoryService.OrderPlaceOrCancelRequest;
 import com.ecom.orderService.clients.inventoryService.ProductResponse;
+import com.ecom.orderService.clients.paymentService.PaymentClient;
+import com.ecom.orderService.clients.paymentService.PaymentRequest;
 import com.ecom.orderService.clients.userService.UserAddressResponse;
 import com.ecom.orderService.clients.userService.UserClient;
 import com.ecom.orderService.dto.Mapper;
@@ -35,13 +37,15 @@ public class OrderServiceImpl implements OrderService {
     private final InventoryClient inventoryClient;
     private final Mapper mapper;
     private final UserClient userClient;
+    private final PaymentClient paymentClient;
     public OrderServiceImpl(OrderRepository orderRepository,
                             OrderItemRepository orderItemRepository,
                             CartService cartService,
                             AuthUtil authUtil,
                             InventoryClient inventoryClient,
                             Mapper mapper,
-                            UserClient userClient
+                            UserClient userClient,
+                            PaymentClient paymentClient
                              ) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
@@ -50,6 +54,7 @@ public class OrderServiceImpl implements OrderService {
         this.inventoryClient = inventoryClient;
         this.mapper=mapper;
         this.userClient=userClient;
+        this.paymentClient=paymentClient;
     }
 
     @Transactional
@@ -95,6 +100,8 @@ public class OrderServiceImpl implements OrderService {
                 orderItemRepository.save(orderItem);
             }
             // to do payment service call to make payment
+            //boolean isPaymentSuccessful=makePayment(totalPrice);
+            boolean paymentSuccessful=true;
             // send notification to user via notification service
             order.setTotalPrice(totalPrice);
             orderRepository.save(order);
@@ -172,4 +179,17 @@ public class OrderServiceImpl implements OrderService {
         return mapper.toOrderResponse(order);
     }
 
+    public List<OrderResponse> getAllOrders(){
+        Long userId=authUtil.getLoggedInUserId();
+        List<Order> orders=orderRepository.findByUserId(userId);
+        List<OrderResponse> orderResponseList=new ArrayList<>();
+        for (Order order: orders){
+            orderResponseList.add(mapper.toOrderResponse(order));
+        }
+        return orderResponseList;
+    }
+
+    public boolean makePayment(BigDecimal totalPrice){
+        return paymentClient.makePayment(new PaymentRequest(totalPrice));
+    }
 }

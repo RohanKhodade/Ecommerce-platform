@@ -60,4 +60,8 @@ public class UserController {
                                                 @PathVariable Long addressId){
         return new ResponseEntity<> (addressService.deleteAddress(userId,addressId),HttpStatus.OK);
     }
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getLoggedUser(){
+        return new ResponseEntity<> (userService.getMyInfo(),HttpStatus.OK);
+    }
 }

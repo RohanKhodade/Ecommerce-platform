@@ -11,4 +11,5 @@ public interface UserService {
     String changeEmail(Long userId, ChangeEmailRequest changeEmail);
     UserResponse updateUserDetails(Long userId, UpdateUserRequest request);
     String deleteUser(Long userId);
+    UserResponse getMyInfo();
 }

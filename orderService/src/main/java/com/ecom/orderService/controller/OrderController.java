@@ -31,4 +31,8 @@ public class OrderController {
     public ResponseEntity<OrderResponse> viewOrder(@PathVariable Long orderId){
         return new ResponseEntity<>(orderService.viewOrder(orderId),HttpStatus.OK);
     }
+    @GetMapping("/all")
+    public ResponseEntity<List<OrderResponse>> findAll(){
+        return new ResponseEntity<>(orderService.getAllOrders(),HttpStatus.OK);
+    }
 }

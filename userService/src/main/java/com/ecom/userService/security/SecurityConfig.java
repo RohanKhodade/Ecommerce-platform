@@ -40,9 +40,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) {
-        httpSecurity.
+        httpSecurity
                 // for production apply the cors method here
-                csrf(csrf->csrf.disable())
+                .cors(cors->
+                        cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf->csrf.disable())
                 .authorizeHttpRequests(authorizeRequests->
                         authorizeRequests.requestMatchers(
                                 "/api/auth/login",
@@ -79,7 +81,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

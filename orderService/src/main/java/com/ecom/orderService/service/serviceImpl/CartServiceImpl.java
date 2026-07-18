@@ -42,19 +42,33 @@ public class CartServiceImpl implements CartService {
     public String addItemToCart(CartItemRequest request){
         Long userId=authUtil.getLoggedInUserId();
         Cart cart=cartRepository.getByUserId(userId).orElse(null);
-        CartItem cartItem=new CartItem();
-        cartItem.setProductId(request.getProductId());
-        cartItem.setQuantity(request.getQuantity());
         if (cart!=null){
-            cartItem.setCart(cart);
+            CartItem existingItem=cartItemRepository.
+                    findByCartIdAndProductId(cart.getId(),request.getProductId())
+                    .orElse(null);
+            if (existingItem==null){
+                CartItem cartItem=new CartItem();
+                cartItem.setProductId(request.getProductId());
+                cartItem.setQuantity(request.getQuantity());
+                cartItem.setCart(cart);
+                cartItemRepository.save(cartItem);
+                return "Item Added to cart";
+            }else{
+                existingItem.setQuantity(request.getQuantity());
+                cartItemRepository.save(existingItem);
+                return "Item Added to cart";
+            }
         }else{
             Cart newCart=new Cart();
             newCart.setUserId(userId);
             Cart savedCart=cartRepository.save(newCart);
+            CartItem cartItem=new CartItem();
+            cartItem.setProductId(request.getProductId());
+            cartItem.setQuantity(request.getQuantity());
             cartItem.setCart(savedCart);
+            cartItemRepository.save(cartItem);
+            return "Item Added to cart";
         }
-        cartItemRepository.save(cartItem);
-        return "Item Added to cart";
     }
     public String removeItemFromCart(Long productId){
         Long userId=authUtil.getLoggedInUserId();
