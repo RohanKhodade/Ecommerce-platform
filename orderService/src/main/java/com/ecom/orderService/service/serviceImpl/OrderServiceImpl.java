@@ -3,8 +3,8 @@ package com.ecom.orderService.service.serviceImpl;
 import com.ecom.orderService.clients.inventoryService.InventoryClient;
 import com.ecom.orderService.clients.inventoryService.OrderPlaceOrCancelRequest;
 import com.ecom.orderService.clients.inventoryService.ProductResponse;
+import com.ecom.orderService.clients.paymentService.MakePaymentRequest;
 import com.ecom.orderService.clients.paymentService.PaymentClient;
-import com.ecom.orderService.clients.paymentService.PaymentRequest;
 import com.ecom.orderService.clients.userService.UserAddressResponse;
 import com.ecom.orderService.clients.userService.UserClient;
 import com.ecom.orderService.dto.Mapper;
@@ -100,8 +100,7 @@ public class OrderServiceImpl implements OrderService {
                 orderItemRepository.save(orderItem);
             }
             // to do payment service call to make payment
-            //boolean isPaymentSuccessful=makePayment(totalPrice);
-            boolean paymentSuccessful=true;
+            boolean isPaymentSuccessful=makePayment(totalPrice);
             // send notification to user via notification service
             order.setTotalPrice(totalPrice);
             orderRepository.save(order);
@@ -190,6 +189,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public boolean makePayment(BigDecimal totalPrice){
-        return paymentClient.makePayment(new PaymentRequest(totalPrice));
+        return paymentClient.makePayment(new MakePaymentRequest(totalPrice));
     }
 }

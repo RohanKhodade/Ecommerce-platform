@@ -3,6 +3,7 @@ package com.ecom.orderService.exceptions;
 import com.ecom.orderService.dto.response.ErrorResponse;
 import feign.FeignException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -36,17 +37,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<> (ex.getMessage(),HttpStatus.NOT_ACCEPTABLE);
     }
 
-    @ExceptionHandler(FeignException.NotFound.class)
-    public ResponseEntity<ErrorResponse> handleFeignException(FeignException.NotFound ex){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse("Requested product not found :"+ ex.getMessage()));
-    }
+//    @ExceptionHandler(FeignException.NotFound.class)
+//    public ResponseEntity<ErrorResponse> handleFeignException(FeignException.NotFound ex){
+//        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                .body(new ErrorResponse("Requested product not found :"+ ex.getMessage()));
+//    }
 
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<ErrorResponse> handleFeignException(FeignException ex){
         return new ResponseEntity<>(
-                new ErrorResponse("Feign Error: "+ ex.getMessage()),
-                HttpStatus.INTERNAL_SERVER_ERROR
+                new ErrorResponse("Feign Error: "+ ex.contentUTF8()),
+                HttpStatusCode.valueOf(ex.status())
         );
     }
 

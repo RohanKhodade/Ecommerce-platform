@@ -9,6 +9,6 @@ import java.math.BigDecimal;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PaymentRequest {
+public class MakePaymentRequest {
     private BigDecimal totalPrice;
 }
