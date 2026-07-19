@@ -24,4 +24,4 @@ jobs:
         with:
           context: ./eurekaServer
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/eurekaSERVER:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/eureka-server:latest
