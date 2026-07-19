@@ -1,0 +1,30 @@
+name: Build and push Eureka Server
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'eurekaServer/**'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secretd.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./eurekaServer
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/eurekaSERVER:latest
+
+
+
