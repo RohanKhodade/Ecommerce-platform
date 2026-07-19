@@ -12,5 +12,4 @@ public class EurekaServerApplication {
 		SpringApplication.run(EurekaServerApplication.class, args);
 		System.out.println("Eureka Server Application Started at port 8080");
 	}
-
 }

@@ -161,6 +161,10 @@ public class OrderServiceImpl implements OrderService {
         }catch(Exception ex){
             throw ex;
         }
+        if (addressList.isEmpty()){
+            throw new AccessDeniedException("Can't place order because user Address is empty! "+
+                    " Add the Address first");
+        }
         UserAddressResponse firstAddress;
         firstAddress=addressList.getFirst();
         String address=firstAddress.getBuilding()+" "+firstAddress.getStreet()+
