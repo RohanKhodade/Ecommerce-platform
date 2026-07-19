@@ -17,7 +17,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secretd.DOCKERHUB_TOKEN }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push image
         uses: docker/build-push-action@v5
@@ -25,6 +25,3 @@ jobs:
           context: ./eurekaServer
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/eurekaSERVER:latest
-
-
-
