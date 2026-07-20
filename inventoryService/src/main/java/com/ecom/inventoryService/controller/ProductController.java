@@ -32,30 +32,29 @@ public class ProductController {
         return new ResponseEntity<>(productService.getAllProducts(),HttpStatus.OK);
     }
 
-    @GetMapping("/seller/{sellerId}")
-    public ResponseEntity<List<ProductResponse>> getAllProductsOfSeller(@PathVariable Long sellerId){
-        return new ResponseEntity<>(productService.getAllProductsOfSeller(sellerId),HttpStatus.OK);
+    @GetMapping("/sellerProducts")
+    public ResponseEntity<List<ProductResponse>> getAllProductsOfSeller(){
+        return new ResponseEntity<>(productService.getAllProductsOfSeller(),HttpStatus.OK);
     }
 
 
-    @PostMapping("/add/{sellerId}")
-    public ResponseEntity<ProductResponse> addProduct(@Valid @RequestBody AddProductRequest request,
-                                                      @PathVariable Long sellerId){
-        return new ResponseEntity<> (productService.add(request,sellerId),HttpStatus.CREATED);
+    @PostMapping("/add")
+    public ResponseEntity<ProductResponse> addProduct(@Valid @RequestBody AddProductRequest request){
+        return new ResponseEntity<> (productService.add(request),HttpStatus.CREATED);
     }
 
-    @PutMapping("/update/{productId}/{sellerId}")
+    @PutMapping("/update/{productId}")
     public ResponseEntity<ProductResponse> updateProduct(@Valid
                                                              @RequestBody UpdateProductRequest request,
                                                          @PathVariable Long productId,
                                                          @PathVariable Long sellerId){
-        return new ResponseEntity<> (productService.update(request, productId, sellerId),HttpStatus.OK);
+        return new ResponseEntity<> (productService.update(request, productId),HttpStatus.OK);
     }
-    @DeleteMapping("/delete/{productId}/{sellerId}")
+    @DeleteMapping("/delete/{productId}")
     public ResponseEntity<String> deleteProduct(@PathVariable Long productId,
                                            @PathVariable Long sellerId){
         return new ResponseEntity<>
-                (productService.delete(productId,sellerId),HttpStatus.NO_CONTENT);
+                (productService.delete(productId),HttpStatus.NO_CONTENT);
     }
     @PostMapping("/product/place/{productId}")
     public ResponseEntity<String> decrementInventory(@PathVariable Long productId,@RequestBody OrderPlaceOrCancelRequest request

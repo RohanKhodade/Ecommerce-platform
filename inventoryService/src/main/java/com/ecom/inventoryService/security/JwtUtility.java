@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -15,8 +16,11 @@ public class JwtUtility {
     public JwtUtility(HttpServletRequest request) {
         this.request = request;
     }
+
+    @Value("${jwt.secret}")
+    private String secret;
     private SecretKey getKey(){
-        String SECRET="secret key for creating jwt token";
+        String SECRET=secret;
         return Keys.hmacShaKeyFor(SECRET.getBytes());
     }
     public Long extractUserIdFromToken(String token){

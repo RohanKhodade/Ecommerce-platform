@@ -51,4 +51,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleInsufficientStockException(InsufficientStockException ex){
         return new ResponseEntity<> (ex.getMessage(),HttpStatus.BAD_REQUEST);
     }
+
+
+    @ExceptionHandler(UserNotLoggedInException.class)
+    public ResponseEntity<String> handleUserNotLoggedInException(UserNotLoggedInException ex){
+        return new ResponseEntity<> (ex.getMessage(),HttpStatus.UNAUTHORIZED);
+    }
 }

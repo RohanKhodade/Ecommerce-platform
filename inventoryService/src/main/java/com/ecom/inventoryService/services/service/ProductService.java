@@ -12,11 +12,11 @@ import java.util.Optional;
 public interface ProductService {
     ProductResponse findById(Long id);
     List<ProductResponse> getAllProducts();
-    List<ProductResponse> getAllProductsOfSeller(Long sellerId);
-    String delete(Long productId,Long sellerId);
-    ProductResponse update(UpdateProductRequest request, Long productId, Long sellerId);
+    List<ProductResponse> getAllProductsOfSeller();
+    String delete(Long productId);
+    ProductResponse update(UpdateProductRequest request, Long productId);
 
-    ProductResponse add(AddProductRequest request, Long sellerId);
+    ProductResponse add(AddProductRequest request);
     String placeOrder( Long productId,OrderPlaceOrCancelRequest request);
     String cancelOrder( Long productId,OrderPlaceOrCancelRequest request);
 }

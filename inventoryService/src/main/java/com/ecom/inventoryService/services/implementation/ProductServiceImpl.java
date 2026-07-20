@@ -12,6 +12,7 @@ import com.ecom.inventoryService.exception.InsufficientStockException;
 import com.ecom.inventoryService.exception.ResourceNotFoundException;
 import com.ecom.inventoryService.repo.CategoryRepository;
 import com.ecom.inventoryService.repo.ProductRepository;
+import com.ecom.inventoryService.security.AuthUtil;
 import com.ecom.inventoryService.security.UserAccessGuard;
 import com.ecom.inventoryService.services.service.ProductService;
 import jakarta.transaction.Transactional;
@@ -32,17 +33,20 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final UserAccessGuard userAccessGuard;
     private final OrderTransactions orderTransactions;
+    private final AuthUtil authUtil;
 
     public ProductServiceImpl(ProductRepository productRepository,
                               CategoryRepository categoryRepository,
                               UserAccessGuard userAccessGuard,
                               Mapper mapper,
-                              OrderTransactions orderTransactions) {
+                              OrderTransactions orderTransactions,
+                              AuthUtil authUtil) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.userAccessGuard = userAccessGuard;
         this.mapper = mapper;
         this.orderTransactions = orderTransactions;
+        this.authUtil = authUtil;
     }
 
     @Override
@@ -53,12 +57,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public String delete(Long productId, Long sellerId) {
-        if (!userAccessGuard.isUserVerified(sellerId)) {
-            throw new AccessDeniedException("Access denied,  " +
-                    "you are not allowed to delete this product");
-        }
-        Product product = productRepository.findById(productId).orElseThrow(
+    public String delete(Long productId) {
+        Long sellerId=authUtil.getLoggedInUserId();
+        Product product = productRepository.findByIdAndSellerId(productId,sellerId).orElseThrow(
                 () -> new ResourceNotFoundException("Product not found with id: " + productId));
         productRepository.delete(product);
         return "Product Deleted SuccessFully";
@@ -66,13 +67,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponse update(UpdateProductRequest request,
-                                  Long productId,
-                                  Long sellerId) {
-        if (!userAccessGuard.isUserVerified(sellerId)) {
-            throw new AccessDeniedException("Access Denied" +
-                    " you are not allowed to delete this product");
-        }
-        Product product = productRepository.findById(productId).orElseThrow(
+                                  Long productId) {
+        Long sellerId=authUtil.getLoggedInUserId();
+        Product product = productRepository.findByIdAndSellerId(productId,sellerId).orElseThrow(
                 () -> new ResourceNotFoundException("Product not found with id: " + productId));
         product.setName(request.getName());
         product.setDescription(request.getDescription());
@@ -82,18 +79,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse add(AddProductRequest request,
-                               Long sellerId) {
-        if (!userAccessGuard.isUserVerified(sellerId)){
-            throw new AccessDeniedException("Access Denied"+
-                    " you are not allowed to add this product");
-        }
+    public ProductResponse add(AddProductRequest request) {
+        Long userId=authUtil.getLoggedInUserId();
         Product product = mapper.toProduct(request);
         Category category = categoryRepository.findById(request.getCategoryId()).
                 orElseThrow(() -> new ResourceNotFoundException("Category not found, id: " +
                         request.getCategoryId()));
         product.setCategory(category);
-        product.setSellerId(sellerId);
+        product.setSellerId(userId);
         return mapper.toProductResponse(productRepository.save(product));
     }
 
@@ -107,11 +100,8 @@ public class ProductServiceImpl implements ProductService {
         return productResponses;
     }
     @Override
-    public List<ProductResponse> getAllProductsOfSeller(Long sellerId) {
-        if (!userAccessGuard.isUserVerified(sellerId)){
-            throw new AccessDeniedException("Access Denied" +
-                    " you are not allowed to delete this product");
-        }
+    public List<ProductResponse> getAllProductsOfSeller() {
+        Long sellerId=authUtil.getLoggedInUserId();
         List<Product> products=productRepository.findBySellerId(sellerId);
         List<ProductResponse> productResponses = new ArrayList<>();
         for(Product product:products){
