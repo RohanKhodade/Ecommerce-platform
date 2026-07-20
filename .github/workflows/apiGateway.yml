@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - '/apiGateway**'
+      - 'apiGateway/**'
 
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
         with:
           context: ./apiGateway
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/api-gateway:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ecom-api-gateway:latest
 
 #      - name: Trigger Render Deploy
-#        uses: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_EUREKA }}"
+#        uses: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_ }}"

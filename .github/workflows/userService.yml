@@ -1,10 +1,11 @@
-name: Build and push Eureka Server
+name: Build and push user service
 
 on:
   push:
     branches: [main]
     paths:
-      - 'eurekaServer/**'
+      - 'userService/**'
+
 
 jobs:
   build-and-push:
@@ -22,9 +23,9 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          context: ./eurekaServer
+          context: ./userService
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ecom-eureka-server:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ecom-user-service:latest
 
-      - name: Trigger Render Deploy
-        uses: curl -X POST "${{ secrets.TRIGGER_RENDER_DEPLOY_HOOK_EUREKA }}"
+#      - name: Trigger Render Deploy
+#        uses: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_ }}"
