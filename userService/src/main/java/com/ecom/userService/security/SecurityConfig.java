@@ -47,7 +47,7 @@ public class SecurityConfig {
                         authorizeRequests.requestMatchers(
                                 "/api/auth/login",
                                 "/api/auth/register",
-                                "/app/health"
+                                "/health"
                                 ).permitAll()
                                 .anyRequest().authenticated())
                 // no http sessions each request will prove itself via jwt

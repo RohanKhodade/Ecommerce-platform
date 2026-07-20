@@ -27,5 +27,5 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/ecom-inventory-service:latest
 
-#      - name: Trigger Render Deploy
-#        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_ }}"
+      - name: Trigger Render Deploy
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_INVENTORY_SERVICE }}"
