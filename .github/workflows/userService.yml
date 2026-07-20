@@ -28,4 +28,4 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/ecom-user-service:latest
 
 #      - name: Trigger Render Deploy
-#        uses: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_ }}"
+#        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_ }}"

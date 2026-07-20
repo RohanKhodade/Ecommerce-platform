@@ -27,4 +27,4 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/ecom-eureka-server:latest
 
       - name: Trigger Render Deploy
-        uses: curl -X POST "${{ secrets.TRIGGER_RENDER_DEPLOY_HOOK_EUREKA }}"
+        run: curl -X POST "${{ secrets.TRIGGER_RENDER_DEPLOY_HOOK_EUREKA }}"
