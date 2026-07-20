@@ -21,7 +21,7 @@ public class CartController {
         this.cartService=cartService;
     }
 
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<List<CartItemResponse>> getCart(){
         return new ResponseEntity<> (cartService.getCartItems(),HttpStatus.OK);
     }

@@ -21,7 +21,7 @@ public class CategoryController {
     public CategoryController(CategoryServiceImpl categoryService) {
         this.categoryService = categoryService;
     }
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
         return new ResponseEntity<>(categoryService.getAllCategories(), HttpStatus.OK);
     }
