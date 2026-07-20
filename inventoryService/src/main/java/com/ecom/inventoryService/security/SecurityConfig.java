@@ -33,7 +33,7 @@ public class SecurityConfig {
                         auth.requestMatchers("/api/inventory/all",
                                         "/api/inventory/{productId}",
                                         "/api/category/**",
-                                        "api/category",
+                                        "/api/category",
                                         "/health").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class);
