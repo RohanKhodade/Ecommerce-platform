@@ -10,6 +10,6 @@ public class HealthController {
 
     @GetMapping
     public String health() {
-        return "Eureka Server Application is running at port 8080...";
+        return "Eureka Server Application is running at port 8080....";
     }
 }
